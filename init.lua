@@ -250,33 +250,32 @@ require('lazy').setup({
   },
 
   {
-    'nvim-tree/nvim-tree.lua',
-    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    'nvim-neo-tree/neo-tree.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-tree/nvim-web-devicons', 'MunifTanjim/nui.nvim' },
     opts = {
-      view = {
-        adaptive_size = true,
+      close_if_last_window = true,
+      popup_border_style = 'rounded',
+      filesystem = {
+        follow_current_file = {
+          enabled = true,
+          leave_dirs_open = true,
+        },
+        filtered_items = {
+          hide_dotfiles = false,
+          hide_gitignored = false,
+        },
+      },
+      window = {
+        position = 'float',
+        -- width = 40,
+        -- height = 20,
         mappings = {
-          list = {
-            { key = 'u', action = 'dir_up' },
-          },
+          ['<space>'] = 'none',
         },
-      },
-      renderer = {
-        highlight_git = true,
-        icons = {
-          show = {
-            git = true,
-            folder = true,
-            file = true,
-          },
-        },
-      },
-      filters = {
-        dotfiles = true,
       },
     },
     keys = {
-      { '<leader>e', ':NvimTreeToggle<CR>', desc = '[E]xplorer (Toggle Tree)' },
+      { '<leader>e', ':Neotree filesystem toggle<CR>', desc = '[E]xplorer (NeoTree Float)' },
     },
   },
 
