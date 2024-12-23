@@ -153,6 +153,7 @@ vim.opt.inccommand = 'split'
 
 -- Show which line your cursor is on
 vim.opt.cursorline = true
+vim.opt.colorcolumn = '80,100'
 
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
@@ -237,44 +238,43 @@ require('lazy').setup({
   },
 
   {
-    'ThePrimeagen/harpoon',
-    dependencies = { 'nvim-lua/plenary.nvim' },
-    opts = {}, -- Harpoon doesn't require specific setup
-    config = function()
-      local harpoon = require 'harpoon'
-
-      -- REQUIRED
-      harpoon:setup()
-      -- REQUIRED
-
-      vim.keymap.set('n', '<leader>a', function()
-        harpoon:list():add()
-      end, { desc = 'Harpoon Add File' })
-      vim.keymap.set('n', '<leader>h', function()
-        harpoon.ui:toggle_quick_menu(harpoon:list())
-      end, { desc = 'Harpoon Quick Menu' })
-
-      vim.keymap.set('n', '<C-1>', function()
-        harpoon:list():select(1)
-      end, { desc = 'Harpoon Select File 1' })
-      vim.keymap.set('n', '<C-2>', function()
-        harpoon:list():select(2)
-      end, { desc = 'Harpoon Select File 2' })
-      vim.keymap.set('n', '<C-3>', function()
-        harpoon:list():select(3)
-      end, { desc = 'Harpoon Select File 3' })
-      vim.keymap.set('n', '<C-4>', function()
-        harpoon:list():select(4)
-      end, { desc = 'Harpoon Select File 4' })
-
-      -- Toggle previous & next buffers stored within Harpoon list
-      vim.keymap.set('n', '<C-S-P>', function()
-        harpoon:list():prev()
-      end, { desc = 'Harpoon Previous Buffer' })
-      vim.keymap.set('n', '<C-S-N>', function()
-        harpoon:list():next()
-      end, { desc = 'Harpoon Next Buffer' })
-    end,
+    'akinsho/bufferline.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      options = {
+        numbers = 'ordinal', -- Show buffer numbers as ordinals
+        close_command = 'bdelete! %d', -- Command to close a buffer
+        right_mouse_command = 'bdelete! %d', -- Close buffer with right-click
+        left_mouse_command = 'buffer %d', -- Go to buffer with left-click
+        middle_mouse_command = nil, -- Disable middle-click action
+        indicator = {
+          style = 'bold', -- Style of the active buffer indicator
+        },
+        buffer_close_icon = '', -- Icon for closing buffers
+        modified_icon = '●', -- Icon for modified buffers
+        close_icon = '', -- Icon for closing the tabline
+        separator_style = 'thin', -- Options: "slant", "thick", "thin", etc.
+        diagnostics = 'nvim_lsp', -- Show diagnostics from LSP
+        offsets = {
+          {
+            filetype = 'NvimTree',
+            text = 'File Explorer',
+            text_align = 'center',
+            separator = true,
+          },
+        },
+      },
+    },
+    keys = {
+      { '<leader>bn', ':BufferLineCycleNext<CR>', desc = 'Next Buffer' },
+      { '<leader>bp', ':BufferLineCyclePrev<CR>', desc = 'Previous Buffer' },
+      { '<leader>bc', ':BufferLinePickClose<CR>', desc = 'Pick Buffer to Close' },
+      { '<leader>bo', ':BufferLineCloseOthers<CR>', desc = 'Close Other Buffers' },
+      { '<C-1>', ':BufferLineGoToBuffer 1<CR>', desc = 'Go to Buffer 1' },
+      { '<C-2>', ':BufferLineGoToBuffer 2<CR>', desc = 'Go to Buffer 2' },
+      { '<C-3>', ':BufferLineGoToBuffer 3<CR>', desc = 'Go to Buffer 3' },
+      { '<C-4>', ':BufferLineGoToBuffer 4<CR>', desc = 'Go to Buffer 4' },
+    },
   },
 
   {
@@ -940,6 +940,20 @@ require('lazy').setup({
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
 
+      -- Make sure this runs after your colorscheme loads
+      vim.api.nvim_create_autocmd('ColorScheme', {
+        pattern = '*',
+        callback = function()
+          local cursorline_bg = vim.api.nvim_get_hl(0, { name = 'CursorLine' }).bg
+          local normal_bg = vim.api.nvim_get_hl(0, { name = 'Normal' }).bg
+
+          -- Reapply the highlights with priorities
+          vim.api.nvim_set_hl(0, 'CursorLine', { bg = cursorline_bg, priority = 1 })
+          vim.api.nvim_set_hl(0, 'ColorColumn', { bg = normal_bg, blend = 5, priority = 0 })
+        end,
+      })
+      vim.api.nvim_set_hl(0, 'ColorColumn', { link = 'CursorLine' })
+
       -- You can configure highlights by doing something like:
       vim.cmd.hi 'Comment gui=none'
     end,
@@ -1074,6 +1088,19 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
+})
+
+-- Make sure this runs after your colorscheme loads
+vim.api.nvim_create_autocmd('ColorScheme', {
+  pattern = '*',
+  callback = function()
+    local cursorline_bg = vim.api.nvim_get_hl(0, { name = 'CursorLine' }).bg
+    local normal_bg = vim.api.nvim_get_hl(0, { name = 'Normal' }).bg
+
+    -- Reapply the highlights with priorities
+    vim.api.nvim_set_hl(0, 'CursorLine', { bg = cursorline_bg, priority = 1 })
+    vim.api.nvim_set_hl(0, 'ColorColumn', { bg = normal_bg, blend = 3, priority = 0 })
+  end,
 })
 
 -- The line beneath this is called `modeline`. See `:help modeline`
