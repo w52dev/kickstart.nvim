@@ -90,8 +90,6 @@ P.S. You can delete this when you're done too. It's your config now! :)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
-vim.keymap.set('n', '<Leader>t', ':ToggleTerm<CR>', { noremap = true, silent = true })
-
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
@@ -233,7 +231,54 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  { 'akinsho/toggleterm.nvim', version = '*', opts = { direction = 'float' } },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    opts = {
+      open_mapping = [[<c-\>]], -- Default toggle mapping
+      direction = 'float',
+      size = 20, -- for horizontal/vertical
+      float_opts = { -- for floating
+        border = 'curved',
+        -- width = 80,
+        -- height = 25,
+      },
+    },
+    keys = {
+      { '<Leader>t', ':ToggleTerm<CR>', mode = 'n', silent = true, desc = '[T]oggle Terminal' },
+    },
+  },
+
+  {
+    'nvim-tree/nvim-tree.lua',
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    opts = {
+      view = {
+        adaptive_size = true,
+        mappings = {
+          list = {
+            { key = 'u', action = 'dir_up' },
+          },
+        },
+      },
+      renderer = {
+        highlight_git = true,
+        icons = {
+          show = {
+            git = true,
+            folder = true,
+            file = true,
+          },
+        },
+      },
+      filters = {
+        dotfiles = true,
+      },
+    },
+    keys = {
+      { '<leader>e', ':NvimTreeToggle<CR>', desc = '[E]xplorer (Toggle Tree)' },
+    },
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
