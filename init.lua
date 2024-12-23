@@ -191,6 +191,8 @@ vim.keymap.set('n', '<C-l>', '<C-w><C-l>', { desc = 'Move focus to the right win
 vim.keymap.set('n', '<C-j>', '<C-w><C-j>', { desc = 'Move focus to the lower window' })
 vim.keymap.set('n', '<C-k>', '<C-w><C-k>', { desc = 'Move focus to the upper window' })
 
+vim.o.showtabline = 2 -- Always show the tabline
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
@@ -242,7 +244,22 @@ require('lazy').setup({
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
       options = {
-        numbers = 'ordinal', -- Show buffer numbers as ordinals
+        numbers = function(number_opts)
+          return number_opts.ordinal -- Display bufferline position
+        end,
+        name_formatter = function(buf)
+          local harpoon = require 'harpoon.mark'
+          -- Normalize the buffer name to match Harpoon's format
+          local buf_name = vim.fn.fnamemodify(buf.name, ':p') -- Get the absolute path
+          local harpoon_index = harpoon.get_index_of(buf_name)
+          -- Append Harpoon index (if present) to the filename
+          if harpoon_index then
+            return buf.name .. ' (' .. harpoon_index .. ')'
+          end
+          return buf.name
+        end,
+        --numbers = 'ordinal', -- Show buffer numbers as ordinals
+        always_show_bufferline = true, -- Ensures Bufferline is always visible
         close_command = 'bdelete! %d', -- Command to close a buffer
         right_mouse_command = 'bdelete! %d', -- Close buffer with right-click
         left_mouse_command = 'buffer %d', -- Go to buffer with left-click
@@ -275,6 +292,40 @@ require('lazy').setup({
       { '<C-3>', ':BufferLineGoToBuffer 3<CR>', desc = 'Go to Buffer 3' },
       { '<C-4>', ':BufferLineGoToBuffer 4<CR>', desc = 'Go to Buffer 4' },
     },
+  },
+
+  {
+    'ThePrimeagen/harpoon',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = {}, -- Harpoon doesn't require specific setup
+    config = function()
+      local harpoon_mark = require 'harpoon.mark'
+      local harpoon_ui = require 'harpoon.ui'
+
+      -- Setup Harpoon
+      require('harpoon').setup()
+
+      -- Keybindings
+      vim.keymap.set('n', '<leader>a', harpoon_mark.add_file, { desc = 'Harpoon Add File' })
+      vim.keymap.set('n', '<leader>h', harpoon_ui.toggle_quick_menu, { desc = 'Harpoon Quick Menu' })
+      vim.keymap.set('n', '<leader>r', harpoon_mark.rm_file, { desc = 'Remove Harpoon Mark' })
+
+      vim.keymap.set('n', '<leader>1', function()
+        harpoon_ui.nav_file(1)
+      end, { desc = 'Harpoon Select File 1' })
+      vim.keymap.set('n', '<leader>2', function()
+        harpoon_ui.nav_file(2)
+      end, { desc = 'Harpoon Select File 2' })
+      vim.keymap.set('n', '<leader>3', function()
+        harpoon_ui.nav_file(3)
+      end, { desc = 'Harpoon Select File 3' })
+      vim.keymap.set('n', '<leader>4', function()
+        harpoon_ui.nav_file(4)
+      end, { desc = 'Harpoon Select File 4' })
+
+      vim.keymap.set('n', '<C-S-P>', harpoon_ui.nav_prev, { desc = 'Harpoon Previous Buffer' })
+      vim.keymap.set('n', '<C-S-N>', harpoon_ui.nav_next, { desc = 'Harpoon Next Buffer' })
+    end,
   },
 
   {
