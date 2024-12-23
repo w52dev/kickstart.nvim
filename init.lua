@@ -237,6 +237,47 @@ require('lazy').setup({
   },
 
   {
+    'ThePrimeagen/harpoon',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    opts = {}, -- Harpoon doesn't require specific setup
+    config = function()
+      local harpoon = require 'harpoon'
+
+      -- REQUIRED
+      harpoon:setup()
+      -- REQUIRED
+
+      vim.keymap.set('n', '<leader>a', function()
+        harpoon:list():add()
+      end, { desc = 'Harpoon Add File' })
+      vim.keymap.set('n', '<leader>h', function()
+        harpoon.ui:toggle_quick_menu(harpoon:list())
+      end, { desc = 'Harpoon Quick Menu' })
+
+      vim.keymap.set('n', '<C-1>', function()
+        harpoon:list():select(1)
+      end, { desc = 'Harpoon Select File 1' })
+      vim.keymap.set('n', '<C-2>', function()
+        harpoon:list():select(2)
+      end, { desc = 'Harpoon Select File 2' })
+      vim.keymap.set('n', '<C-3>', function()
+        harpoon:list():select(3)
+      end, { desc = 'Harpoon Select File 3' })
+      vim.keymap.set('n', '<C-4>', function()
+        harpoon:list():select(4)
+      end, { desc = 'Harpoon Select File 4' })
+
+      -- Toggle previous & next buffers stored within Harpoon list
+      vim.keymap.set('n', '<C-S-P>', function()
+        harpoon:list():prev()
+      end, { desc = 'Harpoon Previous Buffer' })
+      vim.keymap.set('n', '<C-S-N>', function()
+        harpoon:list():next()
+      end, { desc = 'Harpoon Next Buffer' })
+    end,
+  },
+
+  {
     'akinsho/toggleterm.nvim',
     version = '*',
     opts = {
@@ -943,6 +984,23 @@ require('lazy').setup({
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-context',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
+    opts = {
+      enable = true,
+      multiwindow = false,
+      max_lines = 0,
+      min_window_height = 0,
+      line_numbers = true,
+      multiline_threshold = 20,
+      trim_scope = 'outer',
+      mode = 'cursor',
+      separator = nil,
+      zindex = 20,
+      on_attach = nil,
+    },
   },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
