@@ -207,6 +207,82 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+-- Command to check Bufferline buffers
+vim.api.nvim_create_user_command('BufferlineCheck', function()
+  local bufferline = require 'bufferline'
+  local buffers = bufferline.get_elements().elements
+
+  if not buffers or #buffers == 0 then
+    print 'No buffers found in Bufferline.'
+    return
+  end
+
+  print 'Bufferline Buffers:'
+  for _, buf in ipairs(buffers) do
+    local rel_path = vim.fn.fnamemodify(buf.path, ':.')
+    print('  Relative Path: ' .. rel_path)
+  end
+end, {})
+
+-- Command to check Harpoon marks
+vim.api.nvim_create_user_command('HarpoonCheck', function()
+  local harpoon = require 'harpoon'
+  local marks = harpoon.get_mark_config().marks
+
+  if not marks or #marks == 0 then
+    print 'No marks found in Harpoon.'
+    return
+  end
+
+  print 'Harpoon Marks:'
+  for i, mark in ipairs(marks) do
+    print('  Index: ' .. i .. ', File: ' .. mark.filename)
+  end
+end, {})
+local function debug_bufferline_with_harpoon()
+  local bufferline = require 'bufferline'
+  local harpoon = require 'harpoon'
+  local buffers = bufferline.get_elements().elements
+  local marks = harpoon.get_mark_config().marks
+
+  if not buffers or #buffers == 0 then
+    print 'No buffers found in Bufferline.'
+    return
+  end
+
+  if not marks or #marks == 0 then
+    print 'No marks found in Harpoon.'
+    return
+  end
+
+  print 'Cross-referenced Bufferline and Harpoon Marks:'
+  for _, buf in ipairs(buffers) do
+    local buf_rel_path = vim.fn.fnamemodify(buf.path, ':.') -- Relative path
+    local tab_name = buf_rel_path -- Default to buffer's relative path
+    local harpoon_index = nil
+
+    -- Check if the buffer matches a Harpoon mark
+    for i, mark in ipairs(marks) do
+      if mark.filename == buf_rel_path then
+        harpoon_index = i
+        break
+      end
+    end
+
+    -- Update the tab name if a Harpoon index is found
+    if harpoon_index then
+      tab_name = buf_rel_path .. ' (' .. harpoon_index .. ')'
+    end
+
+    print('  Buffer: ' .. buf_rel_path .. ', Tab Name: ' .. tab_name)
+  end
+end
+
+-- Create a Lua command to call this function
+vim.api.nvim_create_user_command('DebugBufferlineTabs', function()
+  debug_bufferline_with_harpoon()
+end, {})
+
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
@@ -218,6 +294,9 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   end
 end ---@diagnostic disable-next-line: undefined-field
 vim.opt.rtp:prepend(lazypath)
+
+-- clear all harpoon marks
+-- :lua require("harpoon.mark").clear_all()
 
 -- [[ Configure and install plugins ]]
 --
@@ -248,17 +327,41 @@ require('lazy').setup({
           return number_opts.ordinal -- Display bufferline position
         end,
         name_formatter = function(buf)
-          local harpoon = require 'harpoon.mark'
-          -- Normalize the buffer name to match Harpoon's format
-          local buf_name = vim.fn.fnamemodify(buf.name, ':p') -- Get the absolute path
-          local harpoon_index = harpoon.get_index_of(buf_name)
-          -- Append Harpoon index (if present) to the filename
-          if harpoon_index then
-            return buf.name .. ' (' .. harpoon_index .. ')'
+          local harpoon = require 'harpoon'
+          local marks = harpoon.get_mark_config().marks
+
+          -- Get buffer's relative path
+          local buf_rel_path = vim.fn.fnamemodify(buf.path, ':.') -- Relative to PWD
+          local tab_name = buf_rel_path -- Default to buffer's relative path
+          local harpoon_index = nil
+
+          -- Debug: buffer relative path
+          print('[DEBUG Bufferline] Buffer Relative Path:', buf_rel_path)
+
+          -- Cross-reference Harpoon marks
+          for i, mark in ipairs(marks) do
+            local mark_abs_path = vim.fn.resolve(vim.fn.fnamemodify(mark.filename, ':p')) -- Normalize Harpoon's path
+            local buf_abs_path = vim.fn.resolve(vim.fn.fnamemodify(buf.path, ':p')) -- Normalize Bufferline's path
+
+            -- Debug: Harpoon mark absolute path
+            print('[DEBUG Bufferline] Harpoon Mark Absolute Path:', mark_abs_path)
+            print('[DEBUG Bufferline] Buffer Absolute Path:', buf_abs_path)
+
+            if mark_abs_path == buf_abs_path then
+              harpoon_index = i
+              break
+            end
           end
-          return buf.name
+
+          -- Update the tab name if a Harpoon index is found
+          if harpoon_index then
+            tab_name = buf_rel_path .. ' (' .. harpoon_index .. ')'
+          end
+
+          -- Debug: final tab name
+          print('[DEBUG Bufferline] Final Tab Name:', tab_name)
+          return tab_name
         end,
-        --numbers = 'ordinal', -- Show buffer numbers as ordinals
         always_show_bufferline = true, -- Ensures Bufferline is always visible
         close_command = 'bdelete! %d', -- Command to close a buffer
         right_mouse_command = 'bdelete! %d', -- Close buffer with right-click
@@ -294,6 +397,7 @@ require('lazy').setup({
     },
   },
 
+  -- HARPOON
   {
     'ThePrimeagen/harpoon',
     dependencies = { 'nvim-lua/plenary.nvim' },
@@ -305,10 +409,40 @@ require('lazy').setup({
       -- Setup Harpoon
       require('harpoon').setup()
 
+      -- Wrapper function to remove the current mark and cleanup
+      local function remove_mark()
+        local harpoon_mark = require 'harpoon.mark'
+
+        -- Get the current file's absolute path
+        local current_file = vim.fn.expand '%:p'
+
+        -- Remove the mark for the current file
+        harpoon_mark.rm_file(current_file)
+
+        -- Fetch marks directly from the Harpoon configuration
+        local marks = require('harpoon').get_mark_config().marks or {}
+        local cleaned_marks = {}
+
+        -- Filter valid marks
+        for _, mark in ipairs(marks) do
+          if mark.filename and mark.filename ~= '(empty)' then
+            table.insert(cleaned_marks, mark.filename)
+          end
+        end
+
+        -- Rebuild the marks if necessary
+        if #cleaned_marks < #marks then
+          harpoon_mark.clear_all() -- Clear all marks
+          for _, filename in ipairs(cleaned_marks) do
+            harpoon_mark.add_file(filename) -- Re-add valid marks
+          end
+        end
+      end
+
       -- Keybindings
       vim.keymap.set('n', '<leader>a', harpoon_mark.add_file, { desc = 'Harpoon Add File' })
       vim.keymap.set('n', '<leader>h', harpoon_ui.toggle_quick_menu, { desc = 'Harpoon Quick Menu' })
-      vim.keymap.set('n', '<leader>r', harpoon_mark.rm_file, { desc = 'Remove Harpoon Mark' })
+      vim.keymap.set('n', '<leader>r', remove_mark, { desc = 'Remove Harpoon Mark' })
 
       vim.keymap.set('n', '<leader>1', function()
         harpoon_ui.nav_file(1)
