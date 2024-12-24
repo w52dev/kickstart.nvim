@@ -355,7 +355,7 @@ require('lazy').setup({
 
           -- Update the tab name if a Harpoon index is found
           if harpoon_index then
-            tab_name = buf_rel_path .. ' (' .. harpoon_index .. ')'
+            tab_name = buf_rel_path .. ' *' .. harpoon_index .. ''
           end
 
           -- Debug: final tab name
@@ -405,15 +405,27 @@ require('lazy').setup({
     config = function()
       local harpoon_mark = require 'harpoon.mark'
       local harpoon_ui = require 'harpoon.ui'
+      local bufferline = require 'bufferline'
 
       -- Setup Harpoon
       require('harpoon').setup()
 
-      -- Wrapper function to remove the current mark and cleanup
-      local function remove_mark()
-        local harpoon_mark = require 'harpoon.mark'
+      -- Helper function to force Bufferline refresh by simulating re-render
+      local function force_bufferline_refresh()
+        vim.cmd 'redrawtabline' -- Force the tabline to redraw
+      end
 
-        -- Get the current file's absolute path
+      -- Wrapper function to add a mark and refresh Bufferline
+      local function add_mark()
+        local current_file = vim.fn.expand '%:p'
+        harpoon_mark.add_file(current_file)
+
+        -- Force Bufferline refresh
+        force_bufferline_refresh()
+      end
+
+      -- Wrapper function to remove the current mark and refresh Bufferline
+      local function remove_mark()
         local current_file = vim.fn.expand '%:p'
 
         -- Remove the mark for the current file
@@ -421,28 +433,22 @@ require('lazy').setup({
 
         -- Fetch marks directly from the Harpoon configuration
         local marks = require('harpoon').get_mark_config().marks or {}
-        local cleaned_marks = {}
 
-        -- Filter valid marks
-        for _, mark in ipairs(marks) do
-          if mark.filename and mark.filename ~= '(empty)' then
-            table.insert(cleaned_marks, mark.filename)
+        -- Clean up leftover `(empty)` marks without resetting IDs
+        for i = #marks, 1, -1 do -- Iterate backwards to safely remove entries
+          if marks[i].filename == '(empty)' then
+            table.remove(marks, i)
           end
         end
 
-        -- Rebuild the marks if necessary
-        if #cleaned_marks < #marks then
-          harpoon_mark.clear_all() -- Clear all marks
-          for _, filename in ipairs(cleaned_marks) do
-            harpoon_mark.add_file(filename) -- Re-add valid marks
-          end
-        end
+        -- Force Bufferline refresh
+        force_bufferline_refresh()
       end
 
       -- Keybindings
-      vim.keymap.set('n', '<leader>a', harpoon_mark.add_file, { desc = 'Harpoon Add File' })
+      vim.keymap.set('n', '<leader>a', add_mark, { desc = 'Harpoon Add File and Refresh' })
       vim.keymap.set('n', '<leader>h', harpoon_ui.toggle_quick_menu, { desc = 'Harpoon Quick Menu' })
-      vim.keymap.set('n', '<leader>r', remove_mark, { desc = 'Remove Harpoon Mark' })
+      vim.keymap.set('n', '<leader>r', remove_mark, { desc = 'Harpoon Remove File and Refresh' })
 
       vim.keymap.set('n', '<leader>1', function()
         harpoon_ui.nav_file(1)
