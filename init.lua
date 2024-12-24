@@ -330,13 +330,13 @@ require('lazy').setup({
           local harpoon = require 'harpoon'
           local marks = harpoon.get_mark_config().marks
 
-          -- Get buffer's relative path
-          local buf_rel_path = vim.fn.fnamemodify(buf.path, ':.') -- Relative to PWD
-          local tab_name = buf_rel_path -- Default to buffer's relative path
+          -- Get the buffer's filename (last part of the path)
+          local buf_filename = vim.fn.fnamemodify(buf.path, ':t') -- Extract the filename
+          local tab_name = buf_filename -- Default to the filename
           local harpoon_index = nil
 
-          -- Debug: buffer relative path
-          print('[DEBUG Bufferline] Buffer Relative Path:', buf_rel_path)
+          -- Debug: buffer filename
+          print('[DEBUG Bufferline] Buffer Filename:', buf_filename)
 
           -- Cross-reference Harpoon marks
           for i, mark in ipairs(marks) do
@@ -355,7 +355,7 @@ require('lazy').setup({
 
           -- Update the tab name if a Harpoon index is found
           if harpoon_index then
-            tab_name = buf_rel_path .. ' *' .. harpoon_index .. ''
+            tab_name = buf_filename .. ' *' .. harpoon_index .. ''
           end
 
           -- Debug: final tab name
