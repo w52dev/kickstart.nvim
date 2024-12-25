@@ -336,7 +336,7 @@ require('lazy').setup({
           local harpoon_index = nil
 
           -- Debug: buffer filename
-          print('[DEBUG Bufferline] Buffer Filename:', buf_filename)
+          -- print('[DEBUG Bufferline] Buffer Filename:', buf_filename)
 
           -- Cross-reference Harpoon marks
           for i, mark in ipairs(marks) do
@@ -344,8 +344,8 @@ require('lazy').setup({
             local buf_abs_path = vim.fn.resolve(vim.fn.fnamemodify(buf.path, ':p')) -- Normalize Bufferline's path
 
             -- Debug: Harpoon mark absolute path
-            print('[DEBUG Bufferline] Harpoon Mark Absolute Path:', mark_abs_path)
-            print('[DEBUG Bufferline] Buffer Absolute Path:', buf_abs_path)
+            -- print('[DEBUG Bufferline] Harpoon Mark Absolute Path:', mark_abs_path)
+            -- print('[DEBUG Bufferline] Buffer Absolute Path:', buf_abs_path)
 
             if mark_abs_path == buf_abs_path then
               harpoon_index = i
@@ -359,7 +359,7 @@ require('lazy').setup({
           end
 
           -- Debug: final tab name
-          print('[DEBUG Bufferline] Final Tab Name:', tab_name)
+          -- print('[DEBUG Bufferline] Final Tab Name:', tab_name)
           return tab_name
         end,
         always_show_bufferline = true, -- Ensures Bufferline is always visible
@@ -390,10 +390,10 @@ require('lazy').setup({
       { '<leader>bp', ':BufferLineCyclePrev<CR>', desc = 'Previous Buffer' },
       { '<leader>bc', ':BufferLinePickClose<CR>', desc = 'Pick Buffer to Close' },
       { '<leader>bo', ':BufferLineCloseOthers<CR>', desc = 'Close Other Buffers' },
-      { '<A-1>', ':BufferLineGoToBuffer 1<CR>', desc = 'Go to Buffer 1' },
-      { '<A-2>', ':BufferLineGoToBuffer 2<CR>', desc = 'Go to Buffer 2' },
-      { '<A-3>', ':BufferLineGoToBuffer 3<CR>', desc = 'Go to Buffer 3' },
-      { '<A-4>', ':BufferLineGoToBuffer 4<CR>', desc = 'Go to Buffer 4' },
+      { '<A-1>', '<cmd>BufferLineGoToBuffer 1<CR>', desc = 'Go to Buffer 1' },
+      { '<A-2>', '<cmd>BufferLineGoToBuffer 2<CR>', desc = 'Go to Buffer 2' },
+      { '<A-3>', '<cmd>BufferLineGoToBuffer 3<CR>', desc = 'Go to Buffer 3' },
+      { '<A-4>', '<cmd>BufferLineGoToBuffer 4<CR>', desc = 'Go to Buffer 4' },
     },
   },
 
