@@ -313,9 +313,45 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  'j-hui/fidget.nvim',
-  opts = {
-    -- options
+  {
+    'j-hui/fidget.nvim',
+    tag = 'legacy', -- Use 'legacy' for stable releases or omit for latest updates
+    config = function()
+      require('fidget').setup {
+        text = {
+          spinner = 'dots', -- Spinner animation type
+          done = '✔', -- Text shown when task is complete
+        },
+        align = {
+          bottom = true, -- Display fidgets at the bottom of the editor
+          right = true, -- Align fidgets to the right
+        },
+        timer = {
+          spinner_rate = 125, -- Milliseconds per frame of spinner
+          fidget_decay = 2000, -- Delay before fidget disappears after task completion
+          task_decay = 1000, -- Delay before completed tasks are removed
+        },
+        window = {
+          blend = 0, -- Transparency of the window (0 = opaque)
+        },
+        fmt = {
+          task = function(task_name, message, percentage)
+            if percentage then
+              return string.format('%s: %s (%.0f%%)', task_name, message, percentage)
+            else
+              return string.format('%s: %s', task_name, message)
+            end
+          end,
+        },
+        sources = {
+          -- Control individual sources (LSP clients, etc.)
+          ['null-ls'] = false, -- Disable null-ls specific fidgets
+        },
+        debug = {
+          logging = false, -- Disable debug logs
+        },
+      }
+    end,
   },
 
   {
@@ -776,10 +812,6 @@ require('lazy').setup({
       { 'williamboman/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
       'williamboman/mason-lspconfig.nvim',
       'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-      -- Useful status updates for LSP.
-      -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
