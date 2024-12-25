@@ -13,7 +13,7 @@
 - `<leader>bc`:         Pick buffer to close.
 - `<leader>bo`:         Close other buffers.
 
-## Harpoon Navigation
+## Harpoon Navigation (shortcut to file ... remains after exiting nvim)
 - `<leader>a`: Add file to Harpoon.
 - `<leader>h`: Toggle Harpoon quick menu.
 - `<leader>1` to `<leader>4`: Navigate to Harpoon file 1 to 4.
