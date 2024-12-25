@@ -6,14 +6,12 @@
 - `<C-\>`, `<Leader>t`: Toggle terminal.
 
 ## Buffers and Tabs
-- `<leader>bn`: Next buffer.
-- `<leader>bp`: Previous buffer.
-- `<leader>bc`: Pick buffer to close.
-- `<leader>bo`: Close other buffers.
-- `<C-x>`:      Close current buffer.
-- `<A-1>` to `<A-8>`: Go to buffer 1 to 8.
-- `<A-h>`, `<A-Left>`: Go to buffer to the left.
+- `<C-x>`:              Close current buffer.
+- `<A-1>` to `<A-8>`:   Go to buffer 1 to 8.
+- `<A-h>`, `<A-Left>`:  Go to buffer to the left.
 - `<A-l>`, `<A-Right>`: Go to buffer to the right.
+- `<leader>bc`:         Pick buffer to close.
+- `<leader>bo`:         Close other buffers.
 
 ## Harpoon Navigation
 - `<leader>a`: Add file to Harpoon.
