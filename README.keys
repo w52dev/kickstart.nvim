@@ -1,0 +1,30 @@
+## Notes
+- Leader key: `<Space>`.
+- Modify or extend these bindings in your `init.lua` as needed.
+
+- `<leader>e`: Toggle NeoTree file explorer.
+- `<C-\>`, `<Leader>t`: Toggle terminal.
+
+## Buffers and Tabs
+- `<leader>bn`: Next buffer.
+- `<leader>bp`: Previous buffer.
+- `<leader>bc`: Pick buffer to close.
+- `<leader>bo`: Close other buffers.
+- `<C-x>`:      Close current buffer.
+- `<A-1>` to `<A-8>`: Go to buffer 1 to 8.
+- `<A-h>`, `<A-Left>`: Go to buffer to the left.
+- `<A-l>`, `<A-Right>`: Go to buffer to the right.
+
+## Harpoon Navigation
+- `<leader>a`: Add file to Harpoon.
+- `<leader>h`: Toggle Harpoon quick menu.
+- `<leader>1` to `<leader>4`: Navigate to Harpoon file 1 to 4.
+- `<C-S-P>`: Harpoon previous buffer.
+- `<C-S-N>`: Harpoon next buffer.
+
+## TODO Comments
+- `]t`: Next TODO comment.
+- `[t`: Previous TODO comment.
+- `<leader>td`: Display TODOs with Telescope.
+- `<leader>tt`: Add TODOs to quickfix list.
+- available tags in comments: TODO, ATTN, FIX, HACK, WARN, NOTE, PERF

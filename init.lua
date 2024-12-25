@@ -176,6 +176,12 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- or just use <C-\><C-n> to exit terminal mode
 vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
 
+vim.api.nvim_set_keymap('n', '<C-x>', ':bd<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-h>', ':bp<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-l>', ':bn<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-Left>', ':bp<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<A-Right>', ':bn<CR>', { noremap = true, silent = true })
+
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
 -- vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
@@ -282,6 +288,12 @@ end
 vim.api.nvim_create_user_command('DebugBufferlineTabs', function()
   debug_bufferline_with_harpoon()
 end, {})
+
+-- FIXME: nvim-treesitter-textobjects + comments ... comment entire function
+vim.keymap.set('n', 'gcf', function()
+  vim.cmd 'normal! [af'
+  vim.cmd 'normal! gc'
+end, { desc = 'Comment entire function' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -463,6 +475,10 @@ require('lazy').setup({
       { '<A-2>', '<cmd>BufferLineGoToBuffer 2<CR>', desc = 'Go to Buffer 2' },
       { '<A-3>', '<cmd>BufferLineGoToBuffer 3<CR>', desc = 'Go to Buffer 3' },
       { '<A-4>', '<cmd>BufferLineGoToBuffer 4<CR>', desc = 'Go to Buffer 4' },
+      { '<A-5>', '<cmd>BufferLineGoToBuffer 5<CR>', desc = 'Go to Buffer 5' },
+      { '<A-6>', '<cmd>BufferLineGoToBuffer 6<CR>', desc = 'Go to Buffer 6' },
+      { '<A-7>', '<cmd>BufferLineGoToBuffer 7<CR>', desc = 'Go to Buffer 7' },
+      { '<A-8>', '<cmd>BufferLineGoToBuffer 8<CR>', desc = 'Go to Buffer 8' },
     },
   },
 
@@ -1350,6 +1366,10 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+  {
+    'nvim-treesitter/nvim-treesitter-textobjects',
+    dependencies = { 'nvim-treesitter/nvim-treesitter' },
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
