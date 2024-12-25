@@ -319,6 +319,39 @@ require('lazy').setup({
   },
 
   {
+    'nvim-lualine/lualine.nvim',
+    dependencies = { 'nvim-tree/nvim-web-devicons', opt = true },
+    config = function()
+      require('lualine').setup {
+        options = {
+          theme = 'tokyonight',
+          section_separators = { left = '', right = '' }, -- Fancy separators
+          component_separators = { left = '', right = '' },
+          icons_enabled = true,
+        },
+        sections = {
+          lualine_a = { 'mode' }, -- Current mode (e.g., NORMAL, INSERT)
+          lualine_b = { 'branch', 'diff', 'diagnostics' }, -- Git branch, changes, diagnostics
+          lualine_c = { 'filename' }, -- Current filename
+          lualine_x = { 'encoding', 'fileformat', 'filetype' }, -- Encoding, format, file type
+          lualine_y = { 'progress' }, -- Progress (percentage through the file)
+          lualine_z = { 'location' }, -- Cursor location (line/column)
+        },
+        inactive_sections = {
+          lualine_a = {},
+          lualine_b = {},
+          lualine_c = { 'filename' }, -- Show only the filename in inactive windows
+          lualine_x = { 'location' },
+          lualine_y = {},
+          lualine_z = {},
+        },
+        tabline = {}, -- Add a custom tabline if needed
+        extensions = { 'fugitive', 'nvim-tree' }, -- Support for plugins like Git and file explorer
+      }
+    end,
+  },
+
+  {
     'akinsho/bufferline.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons' },
     opts = {
