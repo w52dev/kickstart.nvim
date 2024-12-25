@@ -1216,7 +1216,61 @@ require('lazy').setup({
   },
 
   -- Highlight todo, notes, etc in comments
-  { 'folke/todo-comments.nvim', event = 'VimEnter', dependencies = { 'nvim-lua/plenary.nvim' }, opts = { signs = false } },
+  {
+    'folke/todo-comments.nvim',
+    dependencies = { 'nvim-lua/plenary.nvim', 'nvim-telescope/telescope.nvim' },
+    event = { 'BufReadPost', 'BufNewFile' },
+    config = function()
+      require('todo-comments').setup {
+        keywords = {
+          TODO = { icon = ' ', color = 'info', alt = { 'TBD' } }, -- Icon and alternatives
+          FIX = { icon = ' ', color = 'error', alt = { 'BUG', 'FIXME' } },
+          HACK = { icon = ' ', color = 'warning' },
+          WARN = { icon = ' ', color = 'warning', alt = { 'WARNING', 'XXX' } },
+          NOTE = { icon = '★', color = 'hint' },
+          PERF = { icon = '⏱', color = 'hint' },
+          ATTN = { icon = '❗', color = 'critical' },
+        },
+        highlight = {
+          before = 'fg', -- Highlight the keyword before the text
+          keyword = 'wide', -- Highlight the whole keyword
+          after = 'fg', -- Highlight the text after the keyword
+          pattern = [[.*<(KEYWORDS)\s*:]], -- Pattern to match keywords
+        },
+        colors = {
+          error = { 'DiagnosticError', '#DC2626' },
+          critical = { 'ErrorMsg', '#FF0000' },
+          warning = { 'DiagnosticWarn', '#FBBF24' },
+          info = { 'DiagnosticInfo', '#2563EB' },
+          hint = { 'DiagnosticHint', '#10B981' },
+          default = { 'Identifier', '#7C3AED' },
+        },
+        search = {
+          command = 'rg',
+          args = {
+            '--color=never',
+            '--no-heading',
+            '--with-filename',
+            '--line-number',
+            '--column',
+          },
+          pattern = [[\b(KEYWORDS):]], -- Match pattern
+        },
+      }
+
+      -- Keymaps for navigating and searching TODOs
+      vim.keymap.set('n', ']t', function()
+        require('todo-comments').jump_next()
+      end, { desc = 'Next TODO comment' })
+
+      vim.keymap.set('n', '[t', function()
+        require('todo-comments').jump_prev()
+      end, { desc = 'Previous TODO comment' })
+
+      vim.keymap.set('n', '<leader>td', ':TodoTelescope<CR>', { desc = '[T]ODO [D]isplay with Telescope' })
+      vim.keymap.set('n', '<leader>tt', ':TodoQuickFix<CR>', { desc = '[T]ODO [T]o Quickfix List' })
+    end,
+  },
 
   { -- Collection of various small independent plugins/modules
     'echasnovski/mini.nvim',
