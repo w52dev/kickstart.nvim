@@ -1,0 +1,36 @@
+# install kickstart+ nvim config
+sudo apt install make gcc ripgrep unzip git xclip
+git clone https://github.com/w52dev/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+
+# latest nvim appimage
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+chmod u+x nvim.appimage
+sudo mv nvim.appimage /usr/local/bin/nvim
+nvim --version
+
+# install latest fzf
+sudo apt remove fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install
+fzf --version
+
+# install tree-sitter binary
+sudo apt update
+sudo apt install npm
+sudo npm install -g tree-sitter-cli
+
+# --- terminal fonts
+# install FiraCont nerd-font
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/FiraCode.zip
+mkdir -p ~/.local/share/fonts
+unzip FiraCode.zip -d ~/.local/share/fonts
+fc-cache -fv
+rm FiraCode.zip
+
+# install JetBrainsMono nerd-font
+curl -LO https://github.com/ryanoasis/nerd-fonts/releases/latest/download/JetBrainsMono.zip
+mkdir -p ~/.local/share/fonts
+unzip JetBrainsMono.zip -d ~/.local/share/fonts
+fc-cache -fv
+rm JetBrainsMono.zip
+

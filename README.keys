@@ -26,3 +26,6 @@
 - `<leader>td`: Display TODOs with Telescope.
 - `<leader>tt`: Add TODOs to quickfix list.
 - available tags in comments: TODO, ATTN, FIX, HACK, WARN, NOTE, PERF
+
+- gcc, gc:      Comment current line / selected visual block
+- <leader>f:    Format current buffer
