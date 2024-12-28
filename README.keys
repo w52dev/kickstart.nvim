@@ -20,12 +20,39 @@
 - `<C-S-P>`: Harpoon previous buffer.
 - `<C-S-N>`: Harpoon next buffer.
 
-## TODO Comments
+## TODO Comments / Diagnostics
 - `]t`: Next TODO comment.
 - `[t`: Previous TODO comment.
 - `<leader>td`: Display TODOs with Telescope.
 - `<leader>tt`: Add TODOs to quickfix list.
 - available tags in comments: TODO, ATTN, FIX, HACK, WARN, NOTE, PERF
+- `<leader>q`: Open diagnostic quickfix list.
 
 - gcc, gc:      Comment current line / selected visual block
 - <leader>f:    Format current buffer
+- %		Jump to matching parenthesis
+- :new, :vnew	Opens a horizontal/vertical split (switch to it with C-hjkl)
+- :tabedit	Opens new tab with
+- :e 		Replaces current buffer with new
+- viw, vi{, ... visual selection options
+
+## Search and Replace
+- `<leader>sh`: Search help documentation.
+- `<leader>sf`: Search files.
+- `<leader>sg`: Search by grep.
+- `<leader>sw`: Search current word.
+- `<leader>s/`: Search in open files.
+- `<leader>sr`: Resume last Telescope search.
+- `<leader>s.`: Search recent files.
+
+## LSP (Language Server Protocol)
+- `gd`: Go to definition.
+- `gr`: Find references.
+- `gI`: Go to implementation.
+- `gD`: Go to declaration.
+- `<leader>D`: Type definition.
+- `<leader>ds`: Document symbols.
+- `<leader>ws`: Workspace symbols.
+- `<leader>rn`: Rename symbol.
+- `<leader>ca`: Code action.
+- `<leader>th`: Toggle inlay hints.

@@ -149,8 +149,9 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
--- Show which line your cursor is on
+-- Show which line/column your cursor is on
 vim.opt.cursorline = true
+vim.opt.cuc = true
 vim.opt.colorcolumn = '80,100'
 
 -- Minimal number of screen lines to keep above and below the cursor.
@@ -369,6 +370,19 @@ require('lazy').setup({
     end,
   },
 
+  -- {
+  --   'kana/vim-textobj-user',
+  --   dependencies = { 'kana/vim-textobj-indent' },
+  --   event = 'VeryLazy', -- Load the plugin lazily for better startup performance
+  --   config = function()
+  --     -- Key mappings for region expanding
+  --     vim.api.nvim_set_keymap('o', 'iI', '<Plug>(textobj-indent-i)', { silent = true })
+  --     vim.api.nvim_set_keymap('o', 'aI', '<Plug>(textobj-indent-a)', { silent = true })
+  --     vim.api.nvim_set_keymap('x', 'iI', '<Plug>(textobj-indent-i)', { silent = true })
+  --     vim.api.nvim_set_keymap('x', 'aI', '<Plug>(textobj-indent-a)', { silent = true })
+  --   end,
+  -- },
+
   {
     'nvim-lualine/lualine.nvim',
     dependencies = { 'nvim-tree/nvim-web-devicons', opt = true },
@@ -376,6 +390,7 @@ require('lazy').setup({
       require('lualine').setup {
         options = {
           theme = 'tokyonight',
+          -- theme = 'gruvbox',
           section_separators = { left = '', right = '' }, -- Fancy separators
           component_separators = { left = '', right = '' },
           icons_enabled = true,
@@ -1208,12 +1223,14 @@ require('lazy').setup({
     --
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
+    -- 'gruvbox-community/gruvbox',
     priority = 1000, -- Make sure to load this before all the other start plugins.
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
       -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
       vim.cmd.colorscheme 'tokyonight-night'
+      -- vim.cmd.colorscheme 'gruvbox'
 
       -- Make sure this runs after your colorscheme loads
       vim.api.nvim_create_autocmd('ColorScheme', {
@@ -1328,6 +1345,7 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+
   {
     'nvim-treesitter/nvim-treesitter-context',
     dependencies = { 'nvim-treesitter/nvim-treesitter' },
@@ -1351,7 +1369,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'ruby', 'vimdoc' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
@@ -1362,6 +1380,15 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      incremental_selection = {
+        enable = true,
+        keymaps = {
+          init_selection = 'gnn', -- Initialize selection at the cursor
+          node_incremental = 'grn', -- Increment selection to the next syntax node
+          scope_incremental = 'grc', -- Increment selection to the enclosing scope
+          node_decremental = 'grm', -- Decrement selection back
+        },
+      },
     },
     -- There are additional nvim-treesitter modules that you can use to interact
     -- with nvim-treesitter. You should go explore a few and see what interests you:
