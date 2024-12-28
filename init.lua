@@ -1,92 +1,5 @@
---[[
-
-=====================================================================
-==================== READ THIS BEFORE CONTINUING ====================
-=====================================================================
-========                                    .-----.          ========
-========         .----------------------.   | === |          ========
-========         |.-""""""""""""""""""-.|   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||   KICKSTART.NVIM   ||   |-----|          ========
-========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
-========         |'-..................-'|   |____o|          ========
-========         `"")----------------(""`   ___________      ========
-========        /::::::::::|  |::::::::::\  \ no mouse \     ========
-========       /:::========|  |==hjkl==:::\  \ required \    ========
-========      '""""""""""""'  '""""""""""""'  '""""""""""'   ========
-========                                                     ========
-=====================================================================
-=====================================================================
-
-What is Kickstart?
-
-  Kickstart.nvim is *not* a distribution.
-
-  Kickstart.nvim is a starting point for your own configuration.
-    The goal is that you can read every line of code, top-to-bottom, understand
-    what your configuration is doing, and modify it to suit your needs.
-
-    Once you've done that, you can start exploring, configuring and tinkering to
-    make Neovim your own! That might mean leaving Kickstart just the way it is for a while
-    or immediately breaking it into modular pieces. It's up to you!
-
-    If you don't know anything about Lua, I recommend taking some time to read through
-    a guide. One possible example which will only take 10-15 minutes:
-      - https://learnxinyminutes.com/docs/lua/
-
-    After understanding a bit more about Lua, you can use `:help lua-guide` as a
-    reference for how Neovim integrates Lua.
-    - :help lua-guide
-    - (or HTML version): https://neovim.io/doc/user/lua-guide.html
-
-Kickstart Guide:
-
-  TODO: The very first thing you should do is to run the command `:Tutor` in Neovim.
-
-    If you don't know what this means, type the following:
-      - <escape key>
-      - :
-      - Tutor
-      - <enter key>
-
-    (If you already know the Neovim basics, you can skip this step.)
-
-  Once you've completed that, you can continue working through **AND READING** the rest
-  of the kickstart init.lua.
-
-  Next, run AND READ `:help`.
-    This will open up a help window with some basic information
-    about reading, navigating and searching the builtin help documentation.
-
-    This should be the first place you go to look when you're stuck or confused
-    with something. It's one of my favorite Neovim features.
-
-    MOST IMPORTANTLY, we provide a keymap "<space>sh" to [s]earch the [h]elp documentation,
-    which is very useful when you're not exactly sure of what you're looking for.
-
-  I have left several `:help X` comments throughout the init.lua
-    These are hints about where to find more information about the relevant settings,
-    plugins or Neovim features used in Kickstart.
-
-   NOTE: Look for lines like this
-
-    Throughout the file. These are for you, the reader, to help you understand what is happening.
-    Feel free to delete them once you know what you're doing, but they should serve as a guide
-    for when you are first encountering a few different constructs in your Neovim config.
-
-If you experience any errors while trying to install kickstart, run `:checkhealth` for more info.
-
-I hope you enjoy your Neovim journey,
-- TJ
-
-P.S. You can delete this when you're done too. It's your config now! :)
---]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
---  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
@@ -95,8 +8,6 @@ vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
--- NOTE: You can change these options as you wish!
---  For more options, you can see `:help option-list`
 
 -- Make line numbers default
 vim.opt.number = true
@@ -211,88 +122,6 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.highlight.on_yank()
   end,
 })
-
--- Command to check Bufferline buffers
-vim.api.nvim_create_user_command('BufferlineCheck', function()
-  local bufferline = require 'bufferline'
-  local buffers = bufferline.get_elements().elements
-
-  if not buffers or #buffers == 0 then
-    print 'No buffers found in Bufferline.'
-    return
-  end
-
-  print 'Bufferline Buffers:'
-  for _, buf in ipairs(buffers) do
-    local rel_path = vim.fn.fnamemodify(buf.path, ':.')
-    print('  Relative Path: ' .. rel_path)
-  end
-end, {})
-
--- Command to check Harpoon marks
-vim.api.nvim_create_user_command('HarpoonCheck', function()
-  local harpoon = require 'harpoon'
-  local marks = harpoon.get_mark_config().marks
-
-  if not marks or #marks == 0 then
-    print 'No marks found in Harpoon.'
-    return
-  end
-
-  print 'Harpoon Marks:'
-  for i, mark in ipairs(marks) do
-    print('  Index: ' .. i .. ', File: ' .. mark.filename)
-  end
-end, {})
-local function debug_bufferline_with_harpoon()
-  local bufferline = require 'bufferline'
-  local harpoon = require 'harpoon'
-  local buffers = bufferline.get_elements().elements
-  local marks = harpoon.get_mark_config().marks
-
-  if not buffers or #buffers == 0 then
-    print 'No buffers found in Bufferline.'
-    return
-  end
-
-  if not marks or #marks == 0 then
-    print 'No marks found in Harpoon.'
-    return
-  end
-
-  print 'Cross-referenced Bufferline and Harpoon Marks:'
-  for _, buf in ipairs(buffers) do
-    local buf_rel_path = vim.fn.fnamemodify(buf.path, ':.') -- Relative path
-    local tab_name = buf_rel_path -- Default to buffer's relative path
-    local harpoon_index = nil
-
-    -- Check if the buffer matches a Harpoon mark
-    for i, mark in ipairs(marks) do
-      if mark.filename == buf_rel_path then
-        harpoon_index = i
-        break
-      end
-    end
-
-    -- Update the tab name if a Harpoon index is found
-    if harpoon_index then
-      tab_name = buf_rel_path .. ' (' .. harpoon_index .. ')'
-    end
-
-    print('  Buffer: ' .. buf_rel_path .. ', Tab Name: ' .. tab_name)
-  end
-end
-
--- Create a Lua command to call this function
-vim.api.nvim_create_user_command('DebugBufferlineTabs', function()
-  debug_bufferline_with_harpoon()
-end, {})
-
--- FIXME: nvim-treesitter-textobjects + comments ... comment entire function
-vim.keymap.set('n', 'gcf', function()
-  vim.cmd 'normal! [af'
-  vim.cmd 'normal! gc'
-end, { desc = 'Comment entire function' })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
 --    See `:help lazy.nvim.txt` or https://github.com/folke/lazy.nvim for more info
@@ -602,20 +431,6 @@ require('lazy').setup({
       },
     },
   },
-
-  -- NOTE: Plugins can also be configured to run Lua code when they are loaded.
-  --
-  -- This is often very useful to both group configuration, as well as handle
-  -- lazy loading plugins that don't need to be loaded immediately at startup.
-  --
-  -- For example, in the following configuration, we use:
-  --  event = 'VimEnter'
-  --
-  -- which loads which-key before all the UI elements are loaded. Events can be
-  -- normal autocommands events (`:help autocmd-events`).
-  --
-  -- Then, because we use the `opts` key (recommended), the configuration runs
-  -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
   { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
@@ -973,5 +788,16 @@ vim.api.nvim_create_autocmd('ColorScheme', {
   end,
 })
 
--- The line beneath this is called `modeline`. See `:help modeline`
--- vim: ts=2 sts=2 sw=2 et
+-- Turn off syntax & treesitter highlight for files larger than ~256 KB
+-- and enable lazyredraw for remote performance
+vim.opt.lazyredraw = true
+vim.api.nvim_create_autocmd('BufReadPre', {
+  callback = function(args)
+    local file = args.file
+    local size = vim.fn.getfsize(file)
+    if size > 262144 then
+      vim.cmd('syntax off')
+      if pcall(vim.cmd, 'TSBufDisable highlight') then end
+    end
+  end,
+})
